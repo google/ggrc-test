@@ -4,33 +4,13 @@ Created on Jul 24, 2013
 @author: diana.tzinov
 '''
 
+from CreateBase import BaseTestCreate
 
 
-import unittest
-import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
-
-
-class TestFacilityCreate(WebDriverTestCase):
-    
-    
+class TestFacilityCreate(BaseTestCreate):
     def testFacilityCreate(self):
-        self.testname="testFacilityCreate"
-        self.setup()
-        util = WebdriverUtilities()
-        util.setDriver(self.driver)
-        element = Elements()
-        do = Helpers()
-        do.setUtils(util)
-        do.login()
-        last_created_object_link =do.createObject("Facility")
-        do.navigateToObjectAndOpenObjectEditWindow("Facility",last_created_object_link)
-        do.deleteObject()
+        self._create_test("Facility")
 
-        
-        
+
 if __name__ == "__main__":
     unittest.main()

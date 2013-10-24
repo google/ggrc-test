@@ -4,33 +4,12 @@ Created on Jul 24, 2013
 @author: diana.tzinov
 '''
 
+from CreateBase import BaseTestCreate
 
-
-import unittest
-import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
-
-
-class TestDataAssetCreate(WebDriverTestCase):
-    
-    
+class TestDataAssetCreate(BaseTestCreate):
     def testDataAssetCreate(self):
-        self.testname="testDataAssetCreate"
-        self.setup()
-        util = WebdriverUtilities()
-        util.setDriver(self.driver)
-        element = Elements()
-        do = Helpers()
-        do.setUtils(util)
-        do.login()
-        last_created_object_link =do.createObject("DataAsset")
-        do.navigateToObjectAndOpenObjectEditWindow("DataAsset",last_created_object_link)
-        do.deleteObject()
+        self._create_test("DataAsset")
 
-        
-        
+
 if __name__ == "__main__":
     unittest.main()

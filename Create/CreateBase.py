@@ -1,7 +1,7 @@
 '''
-Created on Jul 18, 2013
+Created on Oct 24, 2013
 
-@author: diana.tzinov
+@author: silas@reciprocitylabs.com
 '''
 
 
@@ -14,14 +14,9 @@ from helperRecip.Helpers import Helpers
 
 
 class BaseTestCreate(WebDriverTestCase):
-    def __init__(self, object_type):
-        self.object_type = object_type
-        self.testname = "test{0}Create".format(object_type)
     
-    def _testCreate(self, object_type):
-        pass
-
-    def testPolicyCreate(self):
+    def _create_test(self, object_type):
+        self.testname = "test{0}Create".format(object_type)
         self.setup()
         util = WebdriverUtilities()
         util.setDriver(self.driver)
@@ -29,15 +24,10 @@ class BaseTestCreate(WebDriverTestCase):
         do = Helpers()
         do.setUtils(util)
         do.login()
-        last_created_object_link = do.createObject(self.object_type)
-        do.navigateToObjectAndOpenObjectEditWindow(self.object_type,last_created_object_link)
+        last_created_object_link = do.createObject(object_type)
+        do.navigateToObjectAndOpenObjectEditWindow(object_type, last_created_object_link)
         do.deleteObject()
 
-class TestPolicyCreate(BaseTestCreate):
-    def testPolicyCreate(self):
-        self._testCreate("Policy")
 
-        
-        
 if __name__ == "__main__":
     unittest.main()

@@ -4,31 +4,13 @@ Created on Jul 23, 2013
 @author: diana.tzinov
 '''
 
-import unittest
-import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from CreateBase import BaseTestCreate
 
 
-class TestMarketCreate(WebDriverTestCase):
-    
-    
+class TestMarketCreate(BaseTestCreate):
     def testMarketCreate(self):
-        self.testname="testMarketCreate"    
-        self.setup()
-        util = WebdriverUtilities()
-        util.setDriver(self.driver)
-        element = Elements()
-        do = Helpers()
-        do.setUtils(util)
-        do.login()
-        last_created_object_link =do.createObject("Market")
-        do.navigateToObjectAndOpenObjectEditWindow("Market",last_created_object_link)
-        do.deleteObject()
+        self._create_test("Market")
 
-        
-        
+
 if __name__ == "__main__":
     unittest.main()

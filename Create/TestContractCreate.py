@@ -4,31 +4,13 @@ Created on Jul 17, 2013
 @author: diana.tzinov
 '''
 
-
-import unittest
-import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from CreateBase import BaseTestCreate
 
 
-class TestContractCreate(WebDriverTestCase):
-    
-    
+class TestContractCreate(BaseTestCreate):
     def testContractCreate(self):
-        self.testname="testContractCreate"
-        self.setup()
-        util = WebdriverUtilities()
-        util.setDriver(self.driver)
-        element = Elements()
-        do = Helpers()
-        do.setUtils(util)
-        do.login()
-        last_created_object_link =do.createObject("Contract")
-        do.navigateToObjectAndOpenObjectEditWindow("Contract",last_created_object_link)
-        do.deleteObject()
-       
-        
+        self._create_test("Contract")
+
+
 if __name__ == "__main__":
     unittest.main()
