@@ -10,6 +10,7 @@ import json
 import os
 import string
 import sys
+import traceback
 import time, calendar
 from time import strftime
 import unittest
@@ -26,19 +27,30 @@ SERVER_USER = 'jenkins'
 
 def log_time(f):
     """decorator that records function time and stores it to the self.test.benchmark dict with key = function name and value = list of durations of all invocations of that function"""
-    def benched_function(*args, **kwargs):
+    def benched_function(self, *args, **kwargs):
+        record = {
+            'name': f.func_name,
+            'start': None,
+            'end': None,
+            'duration': None,
+            'error': None,
+            'steps': []
+            }
+        self.test.benchmark_stack.append(record)
         t_start = dt.now()
-        output = f(*args, **kwargs)
-        t_end = dt.now()
-        t_total = (t_end - t_start).total_seconds()
-        # args[0] = what would otherwise be self
-        # Store the results dict in a var to save space
-        result_dict = args[0].test.benchmarks['results']
-        # Append to list at that key or start new one
-        if f.func_name in result_dict:
-            result_dict[f.func_name].append(t_total)
-        else:
-            result_dict[f.func_name] = [t_total]
+        record['start'] = t_start.isoformat()
+        try:
+            output = f(self, *args, **kwargs)
+        except:
+            record['error'] = traceback.format_exc()
+            raise
+        finally:
+            t_end = dt.now()
+            t_total = (t_end - t_start).total_seconds()
+            record['end'] = t_end.isoformat()
+            record['duration'] = t_total
+            self.test.benchmark_stack.pop()
+            self.test.benchmark_stack[-1]['steps'].append(record)
         return output
 
     return benched_function
@@ -55,6 +67,9 @@ class Helpers(unittest.TestCase):
             self.test = test  # enable it to access unit test object
             self.main_timestamp = strftime("%Y_%m_%d_%H_%M_%S")
             self.test.benchmarks['timestamp'] = self.main_timestamp
+            self.test.benchmarks['steps'] = []
+            self.test.benchmark_stack = []
+            self.test.benchmark_stack.append(self.test.benchmarks)
         super(Helpers, self).__init__()
 
     def setUtils(self, util, object_type=None):

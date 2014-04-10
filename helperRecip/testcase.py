@@ -48,7 +48,7 @@ class WebDriverTestCase(TestCase):
         print "Starting " + self.testname + " at "+strftime("%Y_%m_%d__%H_%M_%S")
 
     def benchmarks_json(self):
-        return json.dumps(self.benchmarks)
+        return json.dumps(self.benchmarks, indent=2)
 
     def setup_jasmine(self):
         browser = config.browser
@@ -90,6 +90,6 @@ class WebDriverTestCase(TestCase):
         self.t_end = datetime.now()
         self.t_total = (self.t_end - self.t_start).total_seconds()
         self.benchmarks['results']['overall_time'] = self.t_total
-        self.write_results(json.dumps(self.benchmarks))
+        self.write_results(json.dumps(self.benchmarks, indent=2))
         self.driver.quit()
 
