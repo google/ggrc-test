@@ -18,8 +18,8 @@ from helperRecip.GRCObject import GRCObject
 class TestContractMapLHN(WebDriverTestCase):
 
     def testContractMapLHN(self):
-        self.testname="TestContractMapLHN"
         self.setup()
+        self.testname="TestContractMapLHN"
         util = WebdriverUtilities()
         util.setDriver(self.driver)
         element = Elements()
@@ -29,7 +29,7 @@ class TestContractMapLHN(WebDriverTestCase):
         do.login()
         contract_name = "Contract for Auto Mapping from LHN"  +do.getTimeId()
         last_created_object_link = do.createObject("Contract", contract_name)
-        do.navigateToObjectWithSearch(contract_name, "Contract")
+        #do.navigateToObjectWithSearch(contract_name, "Contract")
         for obj in grcobject.contract_map_to_lhn: 
             do.mapAObjectLHN(obj)
             #util.refreshPage()
