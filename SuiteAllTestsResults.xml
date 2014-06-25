@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="3" errors="0" failures="0" skip="0"><testcase classname="Create.TestContractCreate.Helpers" name="runTest" time="0.000"></testcase><testcase classname="Create.TestContractCreate.TestContractCreate" name="testContractCreate" time="31.900"><system-out><![CDATA[Starting TestContractCreate at 2014_06_09__18_47_27
+Object deleted successfully.
+]]></system-out></testcase><testcase classname="Create.TestContractCreate.WebdriverUtilities" name="runTest" time="0.000"></testcase></testsuite>
