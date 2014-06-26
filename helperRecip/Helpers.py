@@ -4,22 +4,22 @@ Created on Jun 19, 2013
 @author: diana.tzinov
 '''
 
-import datetime
 from datetime import date, timedelta, datetime as dt
+import datetime
 import json
 import os
 import string
 import sys
-import time, calendar
 from time import strftime
+import time, calendar
 import unittest
 
-from selenium.webdriver.common.by import By
-
-import config
 from Elements import Elements as elem
-from testcase import WebDriverTestCase
 from WebdriverUtilities import WebdriverUtilities
+import config
+from selenium.webdriver.common.by import By
+from testcase import WebDriverTestCase
+
 
 # ON OTHER DEPLOYMENTS, CHANGE THIS to the server user name
 SERVER_USER = 'jenkins'
@@ -166,16 +166,21 @@ class Helpers(unittest.TestCase):
         self.authorizeGAPI()
         self.util.waitForElementToBePresent(elem.dashboard_title)
 
-    def ensureLHNSectionExpanded(self, section):
+    def ensureLHNSectionExpanded(self, section, expandMode=True):
         """expand LHN section if not already expanded; not logging because currently no "wait" step
         """
         object_left_nav_section_object_link = elem.left_nav_expand_object_section_link.replace("OBJECT", section)
         self.assertTrue(self.util.waitForElementToBePresent(object_left_nav_section_object_link),"ERROR in navigateToObject(): can't see LHN link for "+section)
-        if not self.isLHNSectionExpanded(section):
-            self.util.clickOn(object_left_nav_section_object_link)
+        
+        if expandMode == True:
+            if not self.isLHNSectionExpanded(section):
+                self.util.clickOn(object_left_nav_section_object_link)
+        else:
+            if self.isLHNSectionExpanded(section):
+                self.util.clickOn(object_left_nav_section_object_link) #collapse it
 
     def isLHNSectionExpanded(self, section):
-        section_status_link = elem.left_nav_expand_status.replace("OBJECT", section)
+        section_status_link = str(elem.left_nav_expand_status).replace("OBJECT", section)
         return self.util.isElementPresent(section_status_link)
 
     @log_time
@@ -237,10 +242,12 @@ class Helpers(unittest.TestCase):
         self.util.waitForElementToBeVisible(elem.modal_window)
         self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")
 
-        # Populate title
-        self.util.waitForElementToBeVisible(elem.response_title)
-        self.assertTrue(self.util.isElementPresent(elem.response_title), "can't access the input textfield")
-        self.util.inputTextIntoField(object_name, elem.response_title)
+        frame_element = elem.response_title.replace("FRAME_NAME", "description")
+
+        # Populate title        
+        self.assertTrue(self.util.waitForElementToBeVisible(frame_element))
+        #self.util.inputTextIntoField(object_name, elem.response_title)
+        self.util.typeIntoFrame(object_name, frame_element)
         self.saveNewObjectAndWait()
 
     @log_time
@@ -286,8 +293,12 @@ class Helpers(unittest.TestCase):
         """this helper method is generic for any type and verifies that object is created and can be clicked in LHN"""
         # Refresh the page
         self.util.refreshPage()
+        
         # Wait for the object section link to appear in the left nav (e.g. Programs, Products, Policies, etc.)
-        self.ensureLHNSectionExpanded(section)
+        self.ensureLHNSectionExpanded(section, False)
+        # -- work around for ticket 15614155 , set it to False  ----
+        
+        
         # Wait for the newly-created object link to appear in the left nav (e.g. System-auto-test_2013_08_25_13_47_50)
         last_created_object_link = elem.left_nav_last_created_object_link.replace("SECTION", section).replace("OBJECT_TITLE", object_title)
         self.showObjectLinkWithSearch(object_title, section)
@@ -388,8 +399,9 @@ class Helpers(unittest.TestCase):
     def showObjectLinkWithSearch(self, search_term, section):
         object_left_nav_section_object_link_with_one_result = elem.left_nav_expand_object_section_link_one_result_after_search.replace("OBJECT", section)
         self.util.waitForElementToBePresent(elem.left_nav_sections_loaded)  # due to quick-lookup bug
-        time.sleep(5)  # extra delay for margin of error
+        time.sleep(1) # extra delay for margin of error
         self.searchFor(search_term)
+        #time.sleep(5) # hard wait for solving issue of ticket 15614155
         self.util.waitForElementToBePresent(object_left_nav_section_object_link_with_one_result)
         self.assertTrue(self.util.isElementPresent(object_left_nav_section_object_link_with_one_result), "the search did not return one result as it's supposed to" )
         self.ensureLHNSectionExpanded(section)
@@ -466,7 +478,12 @@ class Helpers(unittest.TestCase):
                 print "the option for the dropdown " + key + " that should be selected is " + option
                 self.selectFromDropdownOption(dropdown_element, grcobject_values[key])
                 grcobject_values[key]=option
-
+            if key in ["description","notes"]:
+                time.sleep(3)                  
+                frame_element = elem.object_iFrame.replace("FRAME_NAME",key)
+                self.util.waitForElementToBeVisible(frame_element)
+                grcobject_values[key]=key+"_"+name+ "_edited"
+                self.util.typeIntoFrame(grcobject_values[key], frame_element)
             if key=="code":
                 self.util.waitForElementToBePresent(xpath) 
                 self.util.waitForElementToBeVisible(xpath) 
@@ -486,12 +503,6 @@ class Helpers(unittest.TestCase):
                 matching_email_selector = elem.autocomplete_list_element_with_text.replace("TEXT", owner_email)
                 self.util.waitForElementToBeVisible(matching_email_selector)
                 self.util.clickOn(matching_email_selector)
-            if key in ["description","notes"]:
-                time.sleep(3)  
-                frame_element = elem.object_iFrame.replace("FRAME_NAME",key)
-                self.util.waitForElementToBeVisible(frame_element)
-                grcobject_values[key]=key+"_"+name+ "_edited"
-                self.util.typeIntoFrame(grcobject_values[key], frame_element)
             if key=="url":
                 self.util.waitForElementToBePresent(xpath)
                 self.util.waitForElementToBeVisible(xpath) 
@@ -510,9 +521,10 @@ class Helpers(unittest.TestCase):
         self.util.selectFromDropdownUntilSelected(select_element, option_to_be_selected)
 
     @log_time
-    def verifyObjectValues(self, grcobject_elements, grcobject_values):
+    def verifyObjectValues(self, grcobject_elements, grcobject_values, module=""):
         self.closeOtherWindows()
         for key,xpath in grcobject_elements.iteritems(): 
+            
             if key in ["description","notes"]:
                 time.sleep(3)  
                 frame_element = elem.object_iFrame.replace("FRAME_NAME",key)
@@ -530,10 +542,17 @@ class Helpers(unittest.TestCase):
                 new_value = self.util.getTextFromXpathString(dropdown_element_selected_option)
                 self.assertTrue(new_value == grcobject_values[key], "Verification ERROR: the value of " + key + " should be [" + grcobject_values[key] + "] but it is " + new_value )
             if key in ["title","owner","code","url", "organization", "scope"]:
+
+                    # this is needed because it works for testProgramAudit, but causes failure for test*Edit scripts
+                    if key=="title":
+                        if module=="Audit":
+                            xpath = elem.object_iFrame.replace("FRAME_NAME","description")
+                
                     self.util.waitForElementToBePresent(xpath)
                     self.util.waitForElementToBeVisible(xpath)
                     self.assertTrue(self.util.isElementPresent(xpath),"ERROR inside verifyObjectValues(): can't see element "+key)
                     new_value = self.util.getAnyAttribute(xpath, "value")
+                    
                     if not new_value:
                         self.assertTrue(False, "Verification ERROR: could not retrieve the value of " + xpath)
                     #print "new_value="+new_value
@@ -761,7 +780,7 @@ class Helpers(unittest.TestCase):
         self.util.waitForElementToBeVisible(elem.modal_window)
         self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")
 
-        #verify audit titel textbox
+        #verify audit title textbox
         self.util.waitForElementToBeVisible(elem.object_title)
         self.assertTrue(self.util.isElementPresent(elem.object_title), "can't access the input textfield")
 
@@ -811,8 +830,8 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def expandCollapseRequest(self, request_title_text):
-        expand_link = elem.audit_pbc_request_expand_collapse_button2.replace("TITLE", request_title_text) 
-        expanded_section = elem.audit_pbc_request_expanded.replace("TITLE",request_title_text ) 
+        expand_link = str(elem.audit_pbc_request_expand_collapse_button2).replace("TITLE", request_title_text) 
+        expanded_section = str(elem.audit_pbc_request_expanded).replace("TITLE",request_title_text ) 
         self.util.waitForElementToBePresent(expand_link)
         self.assertTrue(self.util.isElementPresent(expand_link), "can't see the expand link") 
         self.util.hoverOver(expand_link)
@@ -825,7 +844,7 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def setRequestToRespondable(self, request_title_text):
-        target_state_button = elem.audit_pbc_request_state_button.replace("TITLE", request_title_text)
+        target_state_button = str(elem.audit_pbc_request_state_button).replace("TITLE", request_title_text)
         state_element = self.util.driver.find_element_by_xpath(target_state_button)
         self.util.waitForElementToBePresent(target_state_button)
         status = state_element.get_attribute('data-value')
@@ -871,7 +890,8 @@ class Helpers(unittest.TestCase):
     def enterDateWithCalendar(self, date_field, date, field_name="the date field"):
         self.util.waitForElementToBePresent(date_field)
         self.assertTrue(self.util.isElementPresent(date_field), "can't see {} input field".format(field_name))
-        # click on date field to summon calendar
+
+        # click on date field to summon calendar        
         self.util.clickOnAndWaitFor(date_field, elem.datepicker_calendar)
         # select the right month and year
         self.selectMonthYear(date)
@@ -1004,7 +1024,7 @@ class Helpers(unittest.TestCase):
         except:
             return
         for type_ in elem.flash_types:
-            dismiss_btn = elem.flash_box_type_dismiss.replace("TYPE", type_)
+            dismiss_btn = str(elem.flash_box_type_dismiss).replace("TYPE", type_)
             if self.util.isElementPresent(dismiss_btn):
                 self.util.clickOn(dismiss_btn)
 
