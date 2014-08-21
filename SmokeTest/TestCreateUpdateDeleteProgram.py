@@ -5,6 +5,7 @@ Created on Jul 14, 2014
 '''
 
 
+import time
 import unittest
 
 from helperRecip.Elements import Elements
@@ -12,7 +13,7 @@ from helperRecip.GRCObject import GRCObject
 from helperRecip.Helpers import Helpers
 from helperRecip.WebdriverUtilities import WebdriverUtilities
 from helperRecip.testcase import *
-import time
+
 
 class TestCreateUpdateDeleteProgram(WebDriverTestCase):
 
