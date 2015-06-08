@@ -114,14 +114,22 @@ class WebdriverUtilities(unittest.TestCase):
             retries=0
             while True:
                 try:
+                    print "1"
                     #self.scrollIntoView(element)
                     self.hoverOver(element)
+                    print "2"
                     self.assertTrue(self.waitForElementToBePresent(element),"ERROR inside clickOn(): can't see element "+element)
+                    print "3"
                     WebDriverWait(self.driver,timeout).until(EC.visibility_of_element_located((By.XPATH, element)))
+                    print "4"
                     WebDriverWait(self.driver,timeout).until(EC.element_to_be_clickable((By.XPATH, element)))
-                    elem = self.driver.find_element_by_xpath(element)                 
+                    print "5"
+                    elem = self.driver.find_element_by_xpath(element)
+                    print "6"
                     self.driver.execute_script("return arguments[0].click();", elem)
+                    print "7"
                     time.sleep(3)
+                    print "8"
                                         
                     # check if script error exists
                     return self.checkScriptError()

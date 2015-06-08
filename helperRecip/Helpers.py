@@ -18,6 +18,11 @@ from time import strftime
 import time, calendar
 import unicodedata
 import unittest
+from faker import Factory
+import warnings
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 from selenium.webdriver.common import keys
 
@@ -50,6 +55,18 @@ def log_time(f):
 
     return benched_function
 
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being thrown
+    when the function is used."""
+    def newFunc(*args, **kwargs):
+        warnings.warn("Call to deprecated function %s." % func.__name__, category=DeprecationWarning)
+        return func(*args, **kwargs)
+        newFunc.__name__ = func.__name__
+        newFunc.__doc__ = func.__doc__
+        newFunc.__dict__.update(func.__dict__)
+        return newFunc
+
 class Helpers(unittest.TestCase):
     util = WebdriverUtilities()
 
@@ -58,7 +75,7 @@ class Helpers(unittest.TestCase):
         # TODO: Make this less coupled to other parts of the code.
         if test and isinstance(test, WebDriverTestCase):
             self.test = test  # enable it to access unit test object
-            self.main_timestamp = strftime("%Y_%m_%d_%H_%M_%S")
+            self.main_timestamp = time.strftime("%Y_%m_%d_%H_%M_%S")
             self.test.benchmarks['timestamp'] = self.main_timestamp
         from os.path import abspath, dirname, join
         THIS_ABS_PATH = abspath(dirname(__file__))
@@ -194,23 +211,27 @@ class Helpers(unittest.TestCase):
         
 
     def ensureLHNSectionExpanded(self, section, expandMode=True):
+        print "I'm in the ensureLHNSectionExpanded method to expand LHN"
         """expand LHN section if not already expanded; not logging because currently no "wait" step
         """
-        object_left_nav_section_object_link = '//ul[@class="top-level"]//li[contains(@data-model-name,"OBJECT")]/a[contains(@class,"active")]'
-        object_left_nav_section_object_link = object_left_nav_section_object_link.replace("OBJECT", section)
-        link_not_active = '//ul[@class="top-level"]//li[contains(@data-model-name,"OBJECT")]/a'
-        link_not_active = link_not_active.replace("OBJECT", section)
-        self.showLHMenu(True)
+        self.showLHMenu(True)       # expand LHN
+        print "LHN menu is expanded"
+
+        object_lhn_active = elem.object_lhn_active.replace("OBJECT", section)             # web locator for expanded object in LHN
+        object_lhn_inactive = elem.object_lhn_inactive.replace("OBJECT", section)       # web locator to expand required object in LHN
         
-        if expandMode == True:
-                self.expandObjectGroup(section, expandMode)               
-                if not (self.util.isElementPresent(object_left_nav_section_object_link)):
-                    self.util.clickOn(link_not_active)              
+        if expandMode == True:    #if LHN object is required to be expanded
+                if not (self.util.isElementPresent(object_lhn_active)):  #Confirm LHN object level is not already expanded
+                    self.util.clickOnCSS(object_lhn_inactive)  # Expand LHN object level 1
+                print "LHN level 1 is expanded"
+                self.expandObjectGroup(section, expandMode)   # expand LHN object level 2
+                print "LHN level 2 is expanded"
+                print " Done with the method ensureLHNSectionExpanded"
         else:         
-                self.expandObjectGroup(section, expandMode)
+                self.expandObjectGroup(section, expandMode)  # expand LHN object level 2
+
         time.sleep(4)
-        
-        
+
 
     # wait until something comes into picture, e.g., expand the LHN for an object and with until the count appears which signifies that all entries are loaded
     def waitUntilLHNCountDisplay(self, object, timeout=60):
@@ -263,7 +284,8 @@ class Helpers(unittest.TestCase):
         self.util.waitForElementNotToBePresent(elem.left_nav_governance_policies_numbers_not_loaded)
         self.util.waitForElementNotToBePresent(elem.left_nav_governance_regulations_numbers_not_loaded)
         self.util.scroll()  # temporary workaround to refresh the page which will make the title appear (known bug)
-
+        
+    @deprecated
     def generateNameForTheObject(self, grc_object):
         random_number = self.getTimeId()
         name = grc_object + "-auto-test" + random_number
@@ -274,24 +296,32 @@ class Helpers(unittest.TestCase):
         print "Start creating object: " + grc_object
         self.closeOtherWindows()
         if object_name == "":
-            grc_object_name = self.generateNameForTheObject(grc_object)
+            #grc_object_name = self.generateNameForTheObject(grc_object)
+            grc_object_name = self.faker().name()
         else:
             grc_object_name = object_name   
         
         # in the standard create object flow, a new window gets open via Create link in the LHN, in audit tests the new object gets created via + link, and that's why
         # openCreateNewObjectWindowFromLhn have to be skipped
         if open_new_object_window_from_lhn:           
-            self.openCreateNewObjectWindowFromLhn(grc_object) 
-        
-        self.populateNewObjectData(grc_object_name, owner)      
+            self.openCreateNewObjectWindowFromLhn(grc_object)
+
+        print "Populating the object..."
+        logger.info("Populating the object...")
+        self.populateNewObjectData(grc_object_name, owner)
+        print "object populated"
         
         if private_checkbox == "checked":
             self.util.clickOn(elem.modal_window_private_checkbox)
         self.saveNewObjectAndWait()
+        print "Object is saved"
+        return grc_object_name
         # in the standard create object flow, verify the new object is created happens vi LHN, for audits tests this verification should happen in the mapping modal window
+        '''
         if open_new_object_window_from_lhn:
             # uncheck box if it is checked
             # self.uncheckMyWorkBox()
+            print "Verifying whether the object is shown in LHN"
             last_created_object_link = self.verifyObjectIsCreatedinLHN(grc_object, grc_object_name)
             time.sleep(5)
             return last_created_object_link
@@ -301,6 +331,7 @@ class Helpers(unittest.TestCase):
             # commented the verification for now
             last_created_object_link = self.verifyObjectIsCreatedInSections(grc_object_name)
         print "Object created successfully."
+        '''
 
     @log_time
     # You must pass in an object name
@@ -463,6 +494,7 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def expandObjectGroup(self, section, expand=True):
+        print " I'm in expandObjectGroup method to expand LHN level 2"
         
         if section=="Workflow":
             if expand==True:
@@ -492,6 +524,7 @@ class Helpers(unittest.TestCase):
             if expand==True:
                 if (self.util.isElementCSSPresent(elem.obj_directives_grp_collapsed_css))==True:
                     self.util.clickOnCSS(elem.obj_directives_grp_collapsed_css)
+
             else:
                 if (self.util.isElementCSSPresent(elem.obj_directives_grp_expanded_css))==True:
                     self.util.clickOnCSS(elem.obj_directives_grp_expanded_css)
@@ -526,12 +559,17 @@ class Helpers(unittest.TestCase):
     @log_time
     def openCreateNewObjectWindowFromLhn(self, grc_object):
 
+        print "open the LHN and expand the required section"
         self.ensureLHNSectionExpanded(grc_object)
-        
-        object_left_nav_section_object_add_button = elem.left_nav_object_section_add_button.replace("OBJECT", grc_object)
-        self.assertTrue(self.util.waitForElementToBePresent(object_left_nav_section_object_add_button), "ERROR inside openCreateNewObjectWindowFromLhn():can't see the LHN Create New link for " + grc_object)
-        result = self.util.clickOn(object_left_nav_section_object_add_button)
-        self.assertTrue(result, "ERROR in openCreateNewObjectWindowFromLhn(): could not click on LHN Create New link for " + grc_object)
+        object_left_nav_section_object_add_button = elem.left_nav_object_section_add_button.replace("OBJECT", grc_object)    # web locator to click on the add object button
+        print "web locator object_left_nav_section_object_add_button is: ",object_left_nav_section_object_add_button
+
+        #self.assertTrue(self.util.waitForElementToBePresent(object_left_nav_section_object_add_button), "ERROR inside openCreateNewObjectWindowFromLhn():can't see the LHN Create New link for " + grc_object)
+        print "Successfully confirmed that the add object button is shown"
+        result = self.util.clickOnCSS(object_left_nav_section_object_add_button)  # click on the add object button
+        print "Clicked on the button to create a new object"
+        self.assertTrue(result, "ERROR in openCreateNewObjectWindowFromLhn(): could not click on LHN Create New link for " + grc_object)    # confirm you get success on clicking the add object button
+        print "waiting for the add object popup to appear"
         self.waitForCreateModalToAppear()
         time.sleep(2)
 
@@ -552,6 +590,7 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def waitForCreateModalToAppear(self):
+        print "elemt.modal_window web locator: ",elem.modal_window
         self.util.waitForElementToBeVisible(elem.modal_window)
         self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")
 
@@ -569,16 +608,16 @@ class Helpers(unittest.TestCase):
         #first_prgm_name = self.util.getTextFromXpathString(audit_program_1st_item)
         
         if 'audit' in str(object_title).lower():
+            print "I'm in the Audit if loop"
             self.util.hoverOver(elem.audit_program_dropdown_css, "css")            
             self.util.clickOn('//li[@class="ui-menu-item"][1]/a') # arbitrarily pick first entry
-        
-        # Make sure window is there
-        self.util.waitForElementToBeVisible(elem.modal_window)
-        self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")        
+            self.util.waitForElementToBeVisible(elem.modal_window)
+            self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")
         
         # Populate title
         # As of March 02, 2015, Ukyo still have a trouble making the Save buttons active for clicking via automation
         if 'person' in str(object_title).lower():
+            print "I'm in the Person if loop"
             self.util.isElementIdPresent(email)    
             self.util.inputTextIntoFieldAndPressEnter(object_title + "@gmail.com", email_xp)
             time.sleep(2)
@@ -594,8 +633,9 @@ class Helpers(unittest.TestCase):
             self.util.inputTextIntoFieldAndPressEnter(object_title + "@gmail.com", email_xp)            
                 
         else:
+            print " I'm in the else loop of Person"
             self.util.waitForElementToBeVisible(elem.object_title)
-            self.assertTrue(self.util.isElementPresent(elem.object_title), "can't access the input textfield")      
+            #self.assertTrue(self.util.isElementPresent(elem.object_title), "can't access the input textfield")
             self.util.inputTextIntoField(object_title, elem.object_title)            
            
            
@@ -604,6 +644,7 @@ class Helpers(unittest.TestCase):
         # if section object, need to specify other reg/pol/std field;  just pick the first link
         if "Section" in object_title or \
            "section" in object_title:
+            print "I'm in the Section if loop"
             reg_pol_std = '//input[@data-lookup="Policy,Regulation,Standard"]'
             first_link = '//ul[contains(@class, "ui-autocomplete")]/li[1]'
             self.util.clickOn(reg_pol_std)   
@@ -1033,7 +1074,8 @@ class Helpers(unittest.TestCase):
         time.sleep(10)
 
     @log_time
-    def verifyObjectIsCreatedinLHN(self, section, object_title): 
+    def verifyObjectIsCreatedinLHN(self, section, object_title):
+        print "I'm in method verifyObjectIsCreatedinLHN"
         """this helper method is generic for any type and verifies that object is created and can be clicked in LHN"""
         # Refresh the page
         self.util.refreshPage()
@@ -1041,7 +1083,7 @@ class Helpers(unittest.TestCase):
         # Wait for the object section link to appear in the left nav (e.g. Programs, Products, Policies, etc.)
         self.ensureLHNSectionExpanded(section, True)  # Feb09 change to True
         # -- work around for ticket 15614155 , set it to False  ----
-        
+        print "LHN is expanded"
         
         # Wait for the newly-created object link to appear in the left nav (e.g. System-auto-test_2013_08_25_13_47_50)
         last_created_object_link = elem.left_nav_last_created_object_link.replace("SECTION", section).replace("OBJECT_TITLE", object_title)
@@ -1194,15 +1236,19 @@ class Helpers(unittest.TestCase):
     @log_time
     def navigateToObjectAndOpenObjectEditWindow(self, section, object_title_link, refresh_page=True):
 
+        print "object title link is: ", object_title_link
+
         self.closeOtherWindows()
 
         # Wait for the object section link to appear in the left nav (e.g. Programs, Products, Policies, etc.)
         object_left_nav_section_object_link = elem.left_nav_expand_object_section_link.replace("OBJECT", section)
+        print "object_left_nav_section_object_link web locator: ", object_left_nav_section_object_link
         self.assertTrue(self.util.waitForElementToBePresent(object_left_nav_section_object_link), "ERROR inside navigateToObjectAndOpenObjectEditWindow(): can't see object_left_nav_section_object_link")
 
         self.util.scrollIntoView(object_title_link)
         self.assertTrue(self.util.waitForElementToBePresent(object_title_link), "ERROR inside navigateToObjectAndOpenObjectEditWindow(): do not see the just edited object link ")       
         result = self.util.clickOn(object_title_link)
+        print 'result is ',result
         self.assertTrue(result, "ERROR in navigateToObjectAndOpenObjectEditWindow(): could not click on just edited object link: " + object_title_link)
 
         # Wait for the object detail page info section on the right side to appear, then hover over it to enable the Edit button
@@ -2264,17 +2310,15 @@ class Helpers(unittest.TestCase):
     @log_time
     # To show or to hide away menu in the left hand navigation
     def showLHMenu(self, showIt=True):
-        
-        show = '//button[contains(@class, "lhn-trigger pull-left active")]'
-        no_show = '//button[contains(@class, "lhn-trigger pull-left")]'
+
         alternative = '[class="header main"] [class=span12] > button'
         
         if showIt==True:
-            if not (self.util.isElementPresent(show)):
-                self.util.clickOn(no_show) #toggle it to show
+            if not (self.util.isElementPresent(elem.show)):
+                self.util.clickOnCSS(elem.no_show) #toggle it to show
         else:
-            if (self.util.isElementPresent(show)):
-                self.util.clickOn(show) #toggle it to not show
+            if (self.util.isElementPresent(elem.show)):
+                self.util.clickOnCSS(elem.show) #toggle it to not show
 
     @log_time
     def isLHMenuOpen(self):
@@ -3869,8 +3913,18 @@ class Helpers(unittest.TestCase):
         except:
             return False
         
+    def clickActiveTab(self):
+        time.sleep(5)
+        self.util.clickOnCSS(elem.start_new_program)
+        time.sleep(15)
+        #second_widget
         
-    
+    def getFilterText(self):
+        txt =self.util.getTextFromCSSString(elem.filterText)
+        return txt
+        
+    def faker(self):
+        return Factory.create()
         
         
         

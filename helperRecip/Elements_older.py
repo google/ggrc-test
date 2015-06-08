@@ -98,8 +98,7 @@ class Elements(object):
 
         google_calendar_meeting_time = '//div[@class="ui-sch-schmedit"]'
         google_meeting_title = '//div[@class="ui-sch ep-title"]/div[@class="ui-sch-schmedit"]'
-        #dashboard_title= '//h1[@class="entities"]'
-        dashboard_title= '#page-header.entities'
+        dashboard_title= '//h1[@class="entities"]'
         
         left_nav_search_input_textfield= '//input[contains(@class,"widgetsearch")]'
         
@@ -121,7 +120,7 @@ class Elements(object):
         left_nav_expand_status = left_nav_expand_object_section_link + '[contains(@class, "active")]'
         left_nav_expand_object_section_link_one_result_after_search = '//ul[@class="top-level"]//li[contains(@data-model-name,"OBJECT")]/a//span[@class="item-count"][not(contains(.,"(0)"))]'
         left_nav_sections_loaded = '//ul[@class="top-level"]//li[contains(@data-model-name,"Control")]/a//span[@class="item-count"][not(contains(.,"()"))]'  # for confirming that LHN itmes are loaded -- have a value the parens
-        left_nav_object_section_add_button = "li .add-new.oneline > a[data-object-singular=Contract]"
+        left_nav_object_section_add_button = '//ul[@class="top-level"]//li[contains(@data-model-name,"OBJECT")]//li[@class="add-new oneline"]/a'
         left_nav_last_created_object_link = '//ul[@class="top-level"]//li[contains(@data-model-name,"SECTION")]//li[contains(.,"OBJECT_TITLE")]/a'
         #left_nav_first_object_link_in_the_section = '//ul[@class="top-level"]//li[contains(@data-model-name,"SECTION")]/div/ul[contains(@class, "sub-level")]/li[@data-model="true"]/a[contains(@class, "show-extended")]/../../li[1]'
         left_nav_first_object_link_in_the_section = '//li[@class="governance"][1]//div[@class="lhs-main-title"]/span[1]'
@@ -189,7 +188,7 @@ class Elements(object):
         object_detail_page_edit_link = '//section[contains(@id,"info_widget")]//a[contains(@title,"Edit")]'
         object_detail_page_info_section = '//section[contains(@id,"info_widget")]'
         #object_info_page_edit_link = '//div[@id="middle_column"]//a[@title="Edit "]'
-        #object_title = '//input[@name="title"]'
+        object_title = '//input[@name="title"]'
         object_description = '//div[@class="modal-body"]/form/div[2]//div[@class="wysiwyg-area ui-resizable"]/iframe'
         #response_title = '//ul[contains(@id,"FRAME_NAME")]/parent::div/iFrame'
         response_title = '//ul[contains(@id,"description")]/parent::div/iFrame'
@@ -450,8 +449,8 @@ Evidence of this should be provided as Screenshot
         governance_accordion_css = '[class=top-level] > [class="governance accordion-group"] > a'
         
         #LHN
-        obj_directives_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Contract] > a[class ='governance list-toggle oneline']"
-        obj_directives_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Contract] > .content ul li']"
+        obj_directives_grp_collapsed_css = 'li:nth-child(1)  [class="governance list-toggle top"]'
+        obj_directives_grp_expanded_css = 'li:nth-child(1)  [class="governance list-toggle top active"]'
         obj_ctrl_objectives_grp_collapsed_css = 'li:nth-child(2)  [class="governance list-toggle top"]'
         obj_ctrl_objectives_grp_expanded_css = 'li:nth-child(2)  [class="governance list-toggle top active"]'        
         obj_people_grp_collapsed_css = '[class="entities list-toggle top"]'
@@ -483,17 +482,10 @@ Evidence of this should be provided as Screenshot
         audit_program_dropdown_css = '[data-id=program_dd]' # on audit modal
         add_person_plus_sign_DB = '//a[(@data-original-title="Add Person")]'
 
-        #LHN
-        show = 'button.lhn-trigger.active'
-        no_show = 'button.lhn-trigger'
-        #object_lhn_active = "ul.mid-level.in > li[data-model-name = OBJECT] > a[class ='governance list-toggle oneline active']"
-        #object_lhn_inactive = "ul.mid-level.in > li[data-model-name = OBJECT] > a[class ='governance list-toggle oneline']"
-        object_lhn_active='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top.active'
-        object_lhn_inactive='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top'
 
-        #Object Form
-        #object_title = "input[data-id=title_txtbx][name=title]"
-        object_title = '//input[@name="title"]'
+        # LHN
+        show = '//button[contains(@class, "lhn-trigger pull-left active")]'
+        no_show = '//button[contains(@class, "lhn-trigger pull-left")]'
         
         
         
