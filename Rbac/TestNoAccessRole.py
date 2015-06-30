@@ -6,14 +6,10 @@ Description:   System-wide reader role cannot see private program unless he is a
 @author: uduong
 '''
 
-import time
-import unittest
-import unittest
-
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Elements import Elements
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestNoAccessRole(WebDriverTestCase):

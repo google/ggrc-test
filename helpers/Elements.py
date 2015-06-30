@@ -121,7 +121,8 @@ class Elements(object):
         left_nav_expand_status = left_nav_expand_object_section_link + '[contains(@class, "active")]'
         left_nav_expand_object_section_link_one_result_after_search = '//ul[@class="top-level"]//li[contains(@data-model-name,"OBJECT")]/a//span[@class="item-count"][not(contains(.,"(0)"))]'
         left_nav_sections_loaded = '//ul[@class="top-level"]//li[contains(@data-model-name,"Control")]/a//span[@class="item-count"][not(contains(.,"()"))]'  # for confirming that LHN itmes are loaded -- have a value the parens
-        left_nav_object_section_add_button = "li .add-new.oneline > a[data-object-singular=Contract]"
+        left_nav_object_section_add_button = "li .add-new.oneline > a[data-object-singular=OBJECT]"
+        # ToDo: @ambarish: Changed the string 'Contract' to OBJECT in the above CSS. Might need to edit it later
         left_nav_last_created_object_link = '//ul[@class="top-level"]//li[contains(@data-model-name,"SECTION")]//li[contains(.,"OBJECT_TITLE")]/a'
         #left_nav_first_object_link_in_the_section = '//ul[@class="top-level"]//li[contains(@data-model-name,"SECTION")]/div/ul[contains(@class, "sub-level")]/li[@data-model="true"]/a[contains(@class, "show-extended")]/../../li[1]'
         left_nav_first_object_link_in_the_section = '//li[@class="governance"][1]//div[@class="lhs-main-title"]/span[1]'
@@ -250,8 +251,10 @@ Evidence of this should be provided as Screenshot
         select_file_button = '//input[@type="file"]'
         upload_file_button ='//div[@id="picker:ap:0"]'
         title_duplicate_warning = "//label[@class='help-inline warning']"
-        new_person_name = '//input[@id="person_name"]'
-        new_person_email = '//input[@id="person_email"]'
+        #new_person_name = '//input[@id="person_name"]'
+        new_person_name = "#person_name"
+        #new_person_email = '//input[@id="person_email"]'
+        new_person_email = '#person_email'
         new_person_company = '//input[@id="person_company"]'       
         section_add_link_from_inner_nav = '//a[@href="javascript://" and @class="section-add"]'
         section_create_link_from_inner_nav = '//a[@href="javascript://" and @class="section-create"]'
@@ -450,8 +453,64 @@ Evidence of this should be provided as Screenshot
         governance_accordion_css = '[class=top-level] > [class="governance accordion-group"] > a'
         
         #LHN
-        obj_directives_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Contract] > a[class ='governance list-toggle oneline']"
-        obj_directives_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Contract] > .content ul li']"
+        obj_regulation_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Regulation] > a[class ='governance list-toggle oneline']"
+        obj_regulation_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Regulation] > .content ul li']"
+        obj_policy_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Policy] > a[class ='governance list-toggle oneline']"
+        obj_policy_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Policy] > .content ul li']"
+        obj_standard_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Standard] > a[class ='governance list-toggle oneline']"
+        obj_standard_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Standard] > .content ul li']"
+        obj_contract_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Contract] > a[class ='governance list-toggle oneline']"
+        obj_contract_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Contract] > .content ul li']"
+        obj_clause_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Clause] > a[class ='governance list-toggle oneline']"
+        obj_clause_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Clause] > .content ul li']"
+        obj_section_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Section] > a[class ='governance list-toggle oneline']"
+        obj_section_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Section] > .content ul li']"
+
+
+        obj_control_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Control] > a[class ='controls list-toggle oneline']"
+        obj_control_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Control] > .content ul li']"
+        obj_objective_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Objective] > a[class ='objectives list-toggle oneline']"
+        obj_objective_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Objective] > .objectives ul li']"
+
+
+        obj_people_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Person] > a[class ='entities list-toggle oneline']"
+        obj_people_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Person] > .content ul li']"
+        obj_orggroup_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = OrgGroup] > a[class ='entities list-toggle oneline']"
+        obj_orggroup_grp_expanded_css = "ul.mid-level.in > li[data-model-name = OrgGroup] > .content ul li']"
+        obj_vendor_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Vendor] > a[class ='entities list-toggle oneline']"
+        obj_vendor_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Vendor] > .content ul li']"
+
+
+        obj_system_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = System] > a[class ='business list-toggle oneline']"
+        obj_system_grp_expanded_css = "ul.mid-level.in > li[data-model-name = System] > .content ul li']"
+        obj_process_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Process] > a[class ='business list-toggle oneline']"
+        obj_process_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Process] > .content ul li']"
+        obj_dataasset_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = DataAsset] > a[class ='business list-toggle oneline']"
+        obj_dataasset_grp_expanded_css = "ul.mid-level.in > li[data-model-name = DataAsset] > .content ul li']"
+        obj_product_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Product] > a[class ='business list-toggle oneline']"
+        obj_product_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Product] > .content ul li']"
+        obj_project_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Project] > a[class ='business list-toggle oneline']"
+        obj_project_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Project] > .content ul li']"
+        obj_facility_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Facility] > a[class ='business list-toggle oneline']"
+        obj_facility_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Facility] > .content ul li']"
+        obj_market_grp_collapsed_css = "ul.mid-level.in > li[data-model-name = Market] > a[class ='business list-toggle oneline']"
+        obj_market_grp_expanded_css = "ul.mid-level.in > li[data-model-name = Market] > .content ul li']"
+
+
+        obj_program_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Program"]'
+        obj_program_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="Program"]'
+        obj_workflow_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Workflow"]'
+        obj_workflow_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="Workflow"]'
+        obj_audit_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Audit"]'
+        obj_audit_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="Audit"]'
+        obj_controlassessment_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="ControlAssessment"]'
+        obj_controlassessment_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="ControlAssessment"]'
+        obj_issue_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Issue"]'
+        obj_issue_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="Issue"]'
+
+
+        '''
+
         obj_ctrl_objectives_grp_collapsed_css = 'li:nth-child(2)  [class="governance list-toggle top"]'
         obj_ctrl_objectives_grp_expanded_css = 'li:nth-child(2)  [class="governance list-toggle top active"]'        
         obj_people_grp_collapsed_css = '[class="entities list-toggle top"]'
@@ -461,10 +520,12 @@ Evidence of this should be provided as Screenshot
         obj_workflow_grp_expanded_css = '[class="workflow oneline list-toggle active"]'
         obj_workflow_grp_collapsed_css = '[class="workflow oneline list-toggle"]'
         obj_program_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Program"]'
-        obj_program_grp_collapsed_css = '[class="programs list-toggle"][data-object-singular="Program"]'
-        obj_audit_grp_expanded_css = '[class="programs list-toggle active"][data-object-singular="Audit"]'
+        obj_program_grp_collapsed_css = '[class="programs list-toggle oneline"][data-object-singular="Program"]'
+        obj_audit_grp_expanded_css = '[class="programs list-toggle oneline active"][data-object-singular="Audit"]'
         obj_audit_grp_collapsed_css = '[class="programs list-toggle"][data-object-singular="Audit"]'
-        
+
+        '''
+
         page_edit_gear_icon_css =  '[class=details-wrap] [data-toggle=dropdown]' #'[class=grcicon-setup-color]'
         page_edit_link_css = '[class=dropdown-menu] [data-modal-reset=reset]'
         edit_authorization_link_in_DB_css = '[class=dropdown-menu] [data-modal-selector-options=user_roles]'
@@ -486,10 +547,18 @@ Evidence of this should be provided as Screenshot
         #LHN
         show = 'button.lhn-trigger.active'
         no_show = 'button.lhn-trigger'
-        #object_lhn_active = "ul.mid-level.in > li[data-model-name = OBJECT] > a[class ='governance list-toggle oneline active']"
-        #object_lhn_inactive = "ul.mid-level.in > li[data-model-name = OBJECT] > a[class ='governance list-toggle oneline']"
-        object_lhn_active='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top.active'
-        object_lhn_inactive='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top'
+
+        lhn_directive_active='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top.active'
+        lhn_directive_inactive='ul.top-level > li.governance.accordion-group > a.governance.list-toggle.top'
+
+        lhn_control_active='ul.top-level > li.governance.accordion-group:nth-child(2) > a.governance.list-toggle.top.active'
+        lhn_control_inactive='ul.top-level > li.governance.accordion-group:nth-child(2) > a.governance.list-toggle.top'
+
+        lhn_people_active='ul.top-level > li.entities.accordion-group > a.entities.list-toggle.top.active'
+        lhn_people_inactive='ul.top-level > li.entities.accordion-group > a.entities.list-toggle.top'
+
+        lhn_asset_active='ul.top-level > li.business.accordion-group > a.business.list-toggle.top.active'
+        lhn_asset_inactive='ul.top-level > li.business.accordion-group > a.business.list-toggle.top'
 
         #Object Form
         #object_title = "input[data-id=title_txtbx][name=title]"

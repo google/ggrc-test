@@ -5,9 +5,9 @@ Created on Jan 24, 2014
 '''
 import unittest
 import time
-from helperRecip.testcase import *
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from helpers.testcase import *
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
 
 from os.path import abspath, dirname, join
 THIS_ABS_PATH = abspath(dirname(__file__))

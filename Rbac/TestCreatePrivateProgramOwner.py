@@ -6,17 +6,11 @@ Description: Has all the related test cases for ProgramOwner role on a private p
 @author: uduong
 '''
 
-
-import time
-import unittest
-import unittest
-
-
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
-from helperRecip.GRCObject import GRCObject
+from helpers.Elements import Elements
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
+from helpers.GRCObject import GRCObject
 
 class TestCreatePrivateProgramOwner(WebDriverTestCase):
     

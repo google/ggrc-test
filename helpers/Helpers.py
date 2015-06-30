@@ -3,28 +3,24 @@ Created on Jun 19, 2013
 
 @author: diana.tzinov
 '''
-from datetime import date, timedelta, datetime as dt
+from datetime import date, datetime as dt
 import datetime
-from fileinput import close
-import json
 from os import remove, close
 import os
 from random import randint
 from shutil import move
-import string
 import sys
 from tempfile import mkstemp
-from time import strftime
-import time, calendar
-import unicodedata
+import time
+import calendar
 import unittest
-from faker import Factory
 import warnings
 import logging
+
+from faker import Factory
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-from selenium.webdriver.common import keys
 
 from Elements import Elements as elem
 from WebdriverUtilities import WebdriverUtilities
@@ -211,24 +207,39 @@ class Helpers(unittest.TestCase):
         
 
     def ensureLHNSectionExpanded(self, section, expandMode=True):
-        print "I'm in the ensureLHNSectionExpanded method to expand LHN"
-        """expand LHN section if not already expanded; not logging because currently no "wait" step
-        """
         self.showLHMenu(True)       # expand LHN
         print "LHN menu is expanded"
 
-        object_lhn_active = elem.object_lhn_active.replace("OBJECT", section)             # web locator for expanded object in LHN
-        object_lhn_inactive = elem.object_lhn_inactive.replace("OBJECT", section)       # web locator to expand required object in LHN
-        
-        if expandMode == True:    #if LHN object is required to be expanded
-                if not (self.util.isElementPresent(object_lhn_active)):  #Confirm LHN object level is not already expanded
-                    self.util.clickOnCSS(object_lhn_inactive)  # Expand LHN object level 1
-                print "LHN level 1 is expanded"
+        if section in ("Program", "Workflow", "Issue"):  #"Audits", "Control Assessment" objects creation requires another object selection
+            self.expandObjectGroup(section, expandMode)
+
+        if section in ("Regulation", "Policy", "Standard", "Contract", "Clause", "Section"):
+                if not (self.util.isElementPresent(elem.lhn_directive_active)):  #Confirm whether directive tree is expanded
+                    self.util.clickOnCSS(elem.lhn_directive_inactive)  # if not, then expand it
+                print "Directive tree is expanded"
                 self.expandObjectGroup(section, expandMode)   # expand LHN object level 2
-                print "LHN level 2 is expanded"
-                print " Done with the method ensureLHNSectionExpanded"
-        else:         
-                self.expandObjectGroup(section, expandMode)  # expand LHN object level 2
+                print section +" is expanded"
+
+        if section in ("Control", "Objective"):
+                if not (self.util.isElementPresent(elem.lhn_control_active)):  #Confirm whether directive tree is expanded
+                    self.util.clickOnCSS(elem.lhn_control_inactive)  # if not, then expand it
+                print "Controls/Objectives tree is expanded"
+                self.expandObjectGroup(section, expandMode)   # expand LHN object level 2
+                print section +" is expanded"
+
+        if section in ("People", "OrgGroup", "Vendor"):
+                if not (self.util.isElementPresent(elem.lhn_people_active)):  #Confirm whether directive tree is expanded
+                    self.util.clickOnCSS(elem.lhn_people_inactive)  # if not, then expand it
+                print "People/Groups tree is expanded"
+                self.expandObjectGroup(section, expandMode)   # expand LHN object level 2
+                print section +" is expanded"
+
+        if section in ("System", "Process", "DataAsset", "Product", "Project", "Facility", "Market"):
+                if not (self.util.isElementPresent(elem.lhn_asset_active)):  #Confirm whether directive tree is expanded
+                    self.util.clickOnCSS(elem.lhn_asset_inactive)  # if not, then expand it
+                print "Assets/Business tree is expanded"
+                self.expandObjectGroup(section, expandMode)   # expand LHN object level 2
+                print section +" is expanded"
 
         time.sleep(4)
 
@@ -293,23 +304,22 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def createObject(self, grc_object, object_name="", private_checkbox="unchecked", open_new_object_window_from_lhn=True, owner=""):
-        print "Start creating object: " + grc_object
+        print "Creating object: " + grc_object
+
         self.closeOtherWindows()
+
         if object_name == "":
-            #grc_object_name = self.generateNameForTheObject(grc_object)
-            grc_object_name = self.faker().name()
+            grc_object_name = grc_object + " " + self.faker().company()
         else:
-            grc_object_name = object_name   
-        
-        # in the standard create object flow, a new window gets open via Create link in the LHN, in audit tests the new object gets created via + link, and that's why
-        # openCreateNewObjectWindowFromLhn have to be skipped
+            grc_object_name = grc_object + " " + object_name
+
         if open_new_object_window_from_lhn:           
             self.openCreateNewObjectWindowFromLhn(grc_object)
 
         print "Populating the object..."
         logger.info("Populating the object...")
         self.populateNewObjectData(grc_object_name, owner)
-        print "object populated"
+        print "Object populated"
         
         if private_checkbox == "checked":
             self.util.clickOn(elem.modal_window_private_checkbox)
@@ -494,7 +504,6 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def expandObjectGroup(self, section, expand=True):
-        print " I'm in expandObjectGroup method to expand LHN level 2"
         
         if section=="Workflow":
             if expand==True:
@@ -520,56 +529,188 @@ class Helpers(unittest.TestCase):
                 if (self.util.isElementCSSPresent(elem.obj_program_grp_expanded_css))==True:
                     self.util.clickOnCSS(elem.obj_program_grp_expanded_css)
 
-        if section in ("Regulation", "Policy", "Standard", "Contract", "Clause", "Section"):       
+        if section=="ControlAssessment":
             if expand==True:
-                if (self.util.isElementCSSPresent(elem.obj_directives_grp_collapsed_css))==True:
-                    self.util.clickOnCSS(elem.obj_directives_grp_collapsed_css)
+                if (self.util.isElementCSSPresent(elem.obj_controlassessment_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_controlassessment_grp_collapsed_css)
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_controlassessment_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_controlassessment_grp_expanded_css)
+
+        if section=="Issue":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_issue_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_issue_grp_collapsed_css)
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_issue_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_issue_grp_expanded_css)
+
+        if section=="Regulation":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_regulation_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_regulation_grp_collapsed_css)
 
             else:
-                if (self.util.isElementCSSPresent(elem.obj_directives_grp_expanded_css))==True:
-                    self.util.clickOnCSS(elem.obj_directives_grp_expanded_css)
-        
-        # control & objectives        
-        if section in ("Control", "Objective"):       
+                if (self.util.isElementCSSPresent(elem.obj_regulation_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_regulation_grp_expanded_css)
+
+        if section=="Policy":
             if expand==True:
-                if (self.util.isElementCSSPresent(elem.obj_ctrl_objectives_grp_collapsed_css))==True:
-                    self.util.clickOnCSS(elem.obj_ctrl_objectives_grp_collapsed_css)
+                if (self.util.isElementCSSPresent(elem.obj_policy_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_policy_grp_collapsed_css)
+
             else:
-                if (self.util.isElementCSSPresent(elem.obj_ctrl_objectives_grp_expanded_css))==True:
-                    self.util.clickOnCSS(elem.obj_ctrl_objectives_grp_expanded_css)        
-        
-        # people & org group & vendor
-        if section in ("Person", "OrgGroup", "Vendor"):       
+                if (self.util.isElementCSSPresent(elem.obj_policy_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_policy_grp_expanded_css)
+
+        if section=="Standard":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_standard_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_standard_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_standard_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_standard_grp_expanded_css)
+
+        if section=="Contract":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_contract_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_contract_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_contract_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_contract_grp_expanded_css)
+
+        if section=="Section":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_section_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_section_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_section_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_section_grp_expanded_css)
+
+        if section=="Control":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_control_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_control_grp_collapsed_css)
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_control_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_control_grp_expanded_css)
+
+        if section=="Objective":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_objective_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_objective_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_objective_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_objective_grp_expanded_css)
+
+        if section=="People":
             if expand==True:
                 if (self.util.isElementCSSPresent(elem.obj_people_grp_collapsed_css))==True:
                     self.util.clickOnCSS(elem.obj_people_grp_collapsed_css)
+
             else:
                 if (self.util.isElementCSSPresent(elem.obj_people_grp_expanded_css))==True:
                     self.util.clickOnCSS(elem.obj_people_grp_expanded_css)
 
-        # assets & business
-        if section in ("System", "Process", "Project", "DataAsset", "Product", "Facility", "Market"):       
+        if section=="OrgGroup":
             if expand==True:
-                if (self.util.isElementCSSPresent(elem.obj_asset_business_grp_collapsed_css))==True:
-                    self.util.clickOnCSS(elem.obj_asset_business_grp_collapsed_css)
+                if (self.util.isElementCSSPresent(elem.obj_orggroup_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_orggroup_grp_collapsed_css)
+
             else:
-                if (self.util.isElementCSSPresent(elem.obj_asset_business_grp_expanded_css))==True:
-                    self.util.clickOnCSS(elem.obj_asset_business_grp_expanded_css)
+                if (self.util.isElementCSSPresent(elem.obj_orggroup_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_orggroup_grp_expanded_css)
+
+        if section=="Vendor":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_vendor_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_vendor_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_vendor_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_vendor_grp_expanded_css)
+
+        if section=="System":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_system_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_system_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_system_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_system_grp_expanded_css)
+
+        if section=="Process":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_process_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_process_grp_collapsed_css)
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_process_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_process_grp_expanded_css)
+
+        if section=="DataAsset":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_dataasset_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_dataasset_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_dataasset_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_dataasset_grp_expanded_css)
+
+        if section=="Product":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_product_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_product_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_product_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_product_grp_expanded_css)
+
+        if section=="Project":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_project_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_project_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_project_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_project_grp_expanded_css)
+
+        if section=="Facility":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_facility_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_facility_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_facility_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_facility_grp_expanded_css)
+
+        if section=="Market":
+            if expand==True:
+                if (self.util.isElementCSSPresent(elem.obj_market_grp_collapsed_css))==True:
+                    self.util.clickOnCSS(elem.obj_market_grp_collapsed_css)
+
+            else:
+                if (self.util.isElementCSSPresent(elem.obj_market_grp_expanded_css))==True:
+                    self.util.clickOnCSS(elem.obj_market_grp_expanded_css)
+
 
     @log_time
     def openCreateNewObjectWindowFromLhn(self, grc_object):
 
-        print "open the LHN and expand the required section"
+        print "Opening LHN"
         self.ensureLHNSectionExpanded(grc_object)
+        if grc_object == "People":
+            grc_object = "Person"
         object_left_nav_section_object_add_button = elem.left_nav_object_section_add_button.replace("OBJECT", grc_object)    # web locator to click on the add object button
-        print "web locator object_left_nav_section_object_add_button is: ",object_left_nav_section_object_add_button
 
         #self.assertTrue(self.util.waitForElementToBePresent(object_left_nav_section_object_add_button), "ERROR inside openCreateNewObjectWindowFromLhn():can't see the LHN Create New link for " + grc_object)
-        print "Successfully confirmed that the add object button is shown"
         result = self.util.clickOnCSS(object_left_nav_section_object_add_button)  # click on the add object button
-        print "Clicked on the button to create a new object"
+        print "Clicked on the 'Create New' button to create a new object"
         self.assertTrue(result, "ERROR in openCreateNewObjectWindowFromLhn(): could not click on LHN Create New link for " + grc_object)    # confirm you get success on clicking the add object button
-        print "waiting for the add object popup to appear"
+        print "Waiting for the add object popup to appear"
         self.waitForCreateModalToAppear()
         time.sleep(2)
 
@@ -590,12 +731,21 @@ class Helpers(unittest.TestCase):
 
     @log_time
     def waitForCreateModalToAppear(self):
-        print "elemt.modal_window web locator: ",elem.modal_window
         self.util.waitForElementToBeVisible(elem.modal_window)
         self.assertTrue(self.util.isElementPresent(elem.modal_window), "can't see modal dialog window for create new object")
 
     @log_time
     def populateNewObjectData(self, object_title, owner=""):
+
+        if 'person' in str(object_title).lower():
+            self.util.inputTextIntoField(self.faker().email(), elem.new_person_email)
+            self.util.inputTextIntoField(self.faker().name(), elem.new_person_name)
+        else:
+            self.util.waitForElementToBeVisible(elem.object_title)
+            self.util.inputTextIntoField(object_title, elem.object_title)
+
+
+        '''
         name = 'person_name'
         name_xp = '//input[@id="person_name"]'
         email = 'person_email'
@@ -652,7 +802,7 @@ class Helpers(unittest.TestCase):
             time.sleep(10)         
             self.util.hoverOver(first_link)
             self.util.clickOn(first_link)
-            
+          '''
 
     @log_time
     # also have one item not hidden (on purpose)

@@ -1,10 +1,8 @@
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-import config
 import unittest
-from helperRecip.testcase import WebDriverTestCase
-from helperRecip.Elements import Elements as elem
-from helperRecip.Helpers import Helpers
 import time
+
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Elements import Elements as elem
 
 
 class ObjectCreationPage(unittest.TestCase):

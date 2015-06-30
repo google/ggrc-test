@@ -8,14 +8,9 @@ Description:  Case1: Create a process object, export Process database and verifi
 
 '''
 
-
-import time
-import unittest
-import config
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestImportExportProcess(WebDriverTestCase):

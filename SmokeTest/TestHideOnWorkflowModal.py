@@ -7,11 +7,11 @@ Created on Oct 21, 2014
 import time
 import unittest
 
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.WorkFlowHelper import WorkFlowHelper
-from helperRecip.testcase import *
+from helpers.Elements import Elements
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.WorkFlowHelper import WorkFlowHelper
+from helpers.testcase import *
 
 
 class TestHideOnWorkflowModal(WebDriverTestCase):

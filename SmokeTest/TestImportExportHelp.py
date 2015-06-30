@@ -7,14 +7,9 @@ Description:  Export a file and and reimport it.
 
 '''
 
-
-import time
-import unittest
-import config
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestImportExportHelp(WebDriverTestCase):

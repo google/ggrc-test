@@ -8,14 +8,10 @@ Description: uduong and testrecip are the two users needed when running from loc
 
 '''
 
-
-import time
-import unittest
-import datetime
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Elements import Elements
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestCreatePeople(WebDriverTestCase):

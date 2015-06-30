@@ -1,18 +1,16 @@
 from datetime import datetime
 import json
-import os, sys, re
-from os.path import abspath, dirname, expanduser, join
+import os
+from os.path import abspath, dirname, join
 from time import strftime, time
 from unittest import TestCase
-import unittest
 
-import config
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
-from selenium.webdriver.support.ui import WebDriverWait
 
+import config
 
 # ON OTHER DEPLOYMENTS, CHANGE THIS to the server user name
 SERVER_USER = 'jenkins'
@@ -65,7 +63,7 @@ class WebDriverTestCase(TestCase):
                 self.driver = RemoteWebDriver(config.remote_webdriver_url, DesiredCapabilities.CHROME);
             else:
                 self.driver = webdriver.Chrome(config.chrome_driver_filename)   
-        self.base_url =config.url 
+        self.base_url = config.url
         self.driver.get(self.base_url) 
         self.driver.set_window_size(1024, 800)
         self.verificationErrors = []
@@ -86,7 +84,7 @@ class WebDriverTestCase(TestCase):
                 self.driver = RemoteWebDriver(config.remote_webdriver_url, DesiredCapabilities.CHROME);
             else:
                 self.driver = webdriver.Chrome(config.chrome_driver_filename)
-        self.base_url =config.jasmine_url
+        self.base_url = config.jasmine_url
         self.driver.get(self.base_url)
         self.verificationErrors = []
 

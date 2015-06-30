@@ -8,11 +8,11 @@ Created on Aug 10, 2013
 
 import unittest
 import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
-from helperRecip.GRCObject import GRCObject
+from helpers.testcase import *
+from helpers.Elements import Elements
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
+from helpers.GRCObject import GRCObject
 
 
 class TestProductEdit(WebDriverTestCase):
