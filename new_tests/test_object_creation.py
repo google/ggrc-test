@@ -21,7 +21,7 @@ class TestObjectCreation(WebDriverTestCase):
 
         '''Intialization & Setup'''
 
-        self.testname="CreateObjectTests"    # name the test case
+        self.testname="CreateObjectTests"     # name the test case
         self.setup()                          # do the setup
         do = Helpers()                        # instantiate Helpers class
         util = WebdriverUtilities()           # instantiate utilities class and pass it to Helper object (can remove complexity by inheritance etc and can use seleniumwrapper)
@@ -32,7 +32,7 @@ class TestObjectCreation(WebDriverTestCase):
 
         '''Test case'''
 
-        object_list = ["People"]
+        object_list = ["Regulation"]
         #object_list = ["Program", "Contract","Control","DataAsset","Facility","Market","Objective","OrgGroup","Policy","Process","Product",
         #               "Project","Regulation","System","Standard","Clause"]
 
