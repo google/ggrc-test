@@ -9,22 +9,12 @@ Created on Sep 10, 2013
 @author: diana.tzinov
 '''
 
-
-
-
-import unittest
-import time
-import os
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
-from helperRecip.GRCObject import GRCObject
+from helpers.testcase import *
+from helpers.Elements import Elements
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
+from helpers.GRCObject import GRCObject
 import config
-import time,  calendar
-import datetime
-from datetime import timedelta
-from datetime import date
 
 THIS_ABS_PATH = os.path.abspath(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(THIS_ABS_PATH, 'Setup')

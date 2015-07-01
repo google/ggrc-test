@@ -7,11 +7,11 @@ Created on Jul 17, 2013
 
 import time
 import unittest
-from helperRecip.GRCObject import GRCObject
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.GRCObject import GRCObject
+from helpers.Elements import Elements
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 class TestCreateUpdateDeleteProgram(WebDriverTestCase):
     

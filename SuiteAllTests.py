@@ -1,16 +1,14 @@
-'''
-Created on Jul 21, 2013
+# Copyright (C) 2015 Google Inc., authors, and contributors <see AUTHORS file>
+# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+# Created By: asakhare@google.com
+# Maintained By: asakhare@google.com
 
-@author: diana.tzinov
-'''
+#import sys
+#sys.path.append('/Users/asakhare/ggrc-test/new_tests')
+#import test_object_creation
+
+from new_tests.test_object_creation import *
 
 
-from Create.SuiteCreate import *
-from Edit.SuiteEditTests import *
-from Mapping.SuiteMapping import *
-from Rbac.SuiteRbac import *
-from RapidDataEntry.SuiteHideShow import *
-from RapidDataEntry.SuiteSaveAddAnother import *
-from SmokeTest.SuiteSmokeTest import *
-from UserRelatedTests.TestLogin import TestLogin
-#from Audit.SuiteAuditTests import *
+
+

@@ -7,13 +7,9 @@ Description:  Validate import file when each import file has different error
 
 '''
 
-import time
-import unittest
-
-from helperRecip.Elements import Elements
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestImportProcessesValidation(WebDriverTestCase):

@@ -9,11 +9,11 @@ from time import strftime
 import time
 import unittest
 
-from helperRecip.Elements import Elements
-from helperRecip.GRCObject import GRCObject
-from helperRecip.Helpers import Helpers
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.testcase import *
+from helpers.Elements import Elements
+from helpers.GRCObject import GRCObject
+from helpers.Helpers import Helpers
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.testcase import *
 
 
 class TestArtyCreate(WebDriverTestCase):

@@ -8,14 +8,11 @@ Description:  Case1: Create a user, export People database and verified that the
 
 '''
 
-
-import unittest
-import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from helpers.testcase import *
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
 import config
+
 
 class TestImportExportPeople(WebDriverTestCase):
        

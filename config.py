@@ -11,7 +11,8 @@ import sys, os
 
 url = os.getenv('TEST_SITE_URL', "http://localhost:8080")
 remote_webdriver_url = os.getenv('REMOTE_WEBDRIVER_URL', "http://ci.reciprocitylabs.com:4444/wd/hub")
-use_remote_webdriver = bool(remote_webdriver_url)
+#use_remote_webdriver = bool(remote_webdriver_url)
+use_remote_webdriver = bool(False)
 chrome_driver_filename = os.getenv('CHROME_DRIVER_PATH', "/usr/bin/chromedriver")
 path = expanduser("~") + "/Downloads/"
 file_download_path = os.getenv('FILE_DOWNLOAD_PATH', path)

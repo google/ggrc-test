@@ -4,10 +4,10 @@ Created on Jun 17, 2013
 @author: diana.tzinov
 '''
 import unittest
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from helpers.testcase import *
+from helpers.Elements import Elements
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
 
 
 class TestLogin(WebDriverTestCase):

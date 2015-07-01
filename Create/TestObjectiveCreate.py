@@ -7,10 +7,10 @@ Created on Oct 17, 2013
 
 import unittest
 import time
-from helperRecip.testcase import *
-from helperRecip.Elements import Elements
-from helperRecip.WebdriverUtilities import WebdriverUtilities
-from helperRecip.Helpers import Helpers
+from helpers.testcase import *
+from helpers.Elements import Elements
+from helpers.WebdriverUtilities import WebdriverUtilities
+from helpers.Helpers import Helpers
 
 
 class TestObjectiveCreate(WebDriverTestCase):
